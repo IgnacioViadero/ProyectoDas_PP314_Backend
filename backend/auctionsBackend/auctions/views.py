@@ -1,7 +1,9 @@
 # auctions/views.py
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Q, Avg
+from django.utils import timezone
 from .models import Auction, Category, Bid, Comment, Rating
 from .serializers import AuctionSerializer, CategorySerializer, BidSerializer, CommentSerializer, RatingSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
@@ -23,8 +25,9 @@ class AuctionListCreateView(generics.ListCreateAPIView):
         texto = self.request.query_params.get('texto', None)
         categoria = self.request.query_params.get('categoria', None)
         rating_min = self.request.query_params.get('ratingMin', None)
-        precio_min = self.request.query_params.get('precioMin', None)
+        precio_min = self.request.query_params.get('precioMin', None)        
         precio_max = self.request.query_params.get('precioMax', None)
+        is_open = self.request.query_params.get('isOpen', None)
 
         queryset = queryset.annotate(
             avg_rating=Avg('ratings__score')  # Usa related_name='ratings' del modelo Rating
@@ -49,6 +52,14 @@ class AuctionListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(starting_price__lte=precio_max)
         elif precio_min:  
             queryset = queryset.filter(starting_price__gte=precio_min)
+        
+        if is_open is not None and is_open != "":
+            is_open_bool = is_open.lower() == "true"
+            if is_open_bool:
+                queryset = queryset.filter(end_date__gt=timezone.now())  # Open auctions
+            else:
+                queryset = queryset.filter(end_date__lte=timezone.now())  # Closed auctions
+
         return queryset
     
     def perform_create(self, serializer):
@@ -152,3 +163,19 @@ class RatingDeleteView(generics.DestroyAPIView):
             user=self.request.user,
             auction_id=self.kwargs['id_auction']
         )    
+    
+
+class UserRatingView(APIView):
+    def get(self, request):
+        ratings = Rating.objects.filter(user=request.user)
+        serializer = RatingSerializer(ratings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class UserCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        comments = Comment.objects.filter(user_comment=request.user)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    

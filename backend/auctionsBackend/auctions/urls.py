@@ -4,7 +4,8 @@ from .views import (
     CategoryListCreateView, CategoryDetailView,
     BidListCreateView, BidDetailView,
     CommentListCreateView, CommentRetrieveUpdateDelete, 
-    RatingCreateUpdateView, RatingDeleteView
+    RatingCreateUpdateView, RatingDeleteView, UserRatingView,
+    UserCommentView
 )
 
 app_name = "auctions"
@@ -20,4 +21,6 @@ urlpatterns = [
     path('<int:id_auction>/comments/<int:pk>/', CommentRetrieveUpdateDelete.as_view(), name='comment-list-create-update'),
     path('<int:id_auction>/rate/', RatingCreateUpdateView.as_view(), name='rate-auction'),
     path('<int:id_auction>/rate/delete/', RatingDeleteView.as_view(), name='delete-rating'),
+    path('myRatings/', UserRatingView.as_view(), name='user-ratings'),
+    path('myComments/', UserCommentView.as_view(), name='user-comments'),
 ]
