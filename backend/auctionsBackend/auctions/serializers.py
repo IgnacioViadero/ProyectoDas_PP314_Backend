@@ -20,7 +20,6 @@ class RatingSerializer(serializers.ModelSerializer):
 class AuctionSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     auctioneer = serializers.StringRelatedField(read_only=True)
-    category = serializers.PrimaryKeyRelatedField()
 
     class Meta:
         model = Auction
