@@ -20,12 +20,12 @@ class RatingSerializer(serializers.ModelSerializer):
 class AuctionSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     auctioneer = serializers.StringRelatedField(read_only=True)
-    category = serializers.StringRelatedField(read_only=True)
+    category = serializers.PrimaryKeyRelatedField()
 
     class Meta:
         model = Auction
         fields = ['id', 'title', 'description', 'image', 'start_date', 'end_date',
-                  'starting_price', 'stock', 'category', 'brand', 'auctioneer']
+                  'starting_price', 'stock', 'category', 'brand', 'auction', 'auctioneer']
         read_only_fields = ['start_date']
 
     def get_rating(self, obj):
