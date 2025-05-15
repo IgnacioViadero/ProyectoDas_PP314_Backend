@@ -25,7 +25,7 @@ class AuctionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Auction
         fields = ['id', 'title', 'description', 'image', 'start_date', 'end_date',
-                  'starting_price', 'stock', 'category', 'brand', 'rating', 'auctioneer']
+                  'starting_price', 'stock', 'category', 'brand', 'auctioneer']
         read_only_fields = ['start_date']
 
     def get_rating(self, obj):
