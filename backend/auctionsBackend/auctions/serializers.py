@@ -13,7 +13,6 @@ class CategorySerializer(serializers.ModelSerializer):
 class AuctionSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     auctioneer = serializers.StringRelatedField(read_only=True)
-    category = serializers.StringRelatedField(read_only=True)
 
     isOpen = serializers.SerializerMethodField()
 
